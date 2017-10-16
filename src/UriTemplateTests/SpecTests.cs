@@ -5,14 +5,98 @@ using System.Linq;
 using Newtonsoft.Json.Linq;
 using Tavis.UriTemplates;
 using Xunit;
-using Xunit.Extensions;
 
 namespace UriTemplateTests
 {
     public class UriTemplateTests2
     {
+        public static IEnumerable<object[]> SpecSamples
+        {
+            get
+            {
+                Stream stream = null;
 
-        [Theory, MemberData("SpecSamples")]
+                var suites = new List<Dictionary<string, TestSet>>();
+
+                stream =
+                    typeof(UriTemplateTests2).Assembly.GetManifestResourceStream("UriTemplateTests.spec-examples.json");
+                suites.Add(CreateTestSuite(new StreamReader(stream).ReadToEnd()));
+
+                stream = typeof(UriTemplateTests2).Assembly.GetManifestResourceStream(
+                    "UriTemplateTests.spec-examples-by-section.json");
+                suites.Add(CreateTestSuite(new StreamReader(stream).ReadToEnd()));
+
+
+                foreach (var suite in suites)
+                {
+                    foreach (var testset in suite.Values)
+                    {
+                        foreach (var testCase in testset.TestCases)
+                        {
+                            yield return new object[] {testCase.Template, testCase.Result, testCase};
+                        }
+                    }
+                }
+            }
+        }
+
+
+        public static IEnumerable<object[]> ExtendedSamples
+        {
+            get
+            {
+                Stream stream = null;
+
+                var suites = new List<Dictionary<string, TestSet>>();
+
+                stream =
+                    typeof(UriTemplateTests2).Assembly.GetManifestResourceStream(
+                        "UriTemplateTests.extended-tests.json");
+                suites.Add(CreateTestSuite(new StreamReader(stream).ReadToEnd()));
+
+                foreach (var suite in suites)
+                {
+                    foreach (var testset in suite.Values)
+                    {
+                        foreach (var testCase in testset.TestCases)
+                        {
+                            yield return new object[] {testCase.Template, testCase.Result, testCase};
+                        }
+                    }
+                }
+            }
+        }
+
+        public static IEnumerable<object[]> FailureSamples
+        {
+            get
+            {
+                Stream stream = null;
+
+                var suites = new List<Dictionary<string, TestSet>>();
+
+
+                stream =
+                    typeof(UriTemplateTests2).Assembly.GetManifestResourceStream(
+                        "UriTemplateTests.negative-tests.json");
+                suites.Add(CreateTestSuite(new StreamReader(stream).ReadToEnd()));
+
+
+                foreach (var suite in suites)
+                {
+                    foreach (var testset in suite.Values)
+                    {
+                        foreach (var testCase in testset.TestCases)
+                        {
+                            yield return new object[] {testCase.Template, testCase.Result, testCase};
+                        }
+                    }
+                }
+            }
+        }
+
+        [Theory]
+        [MemberData("SpecSamples")]
         public void SpecSamplesTest(string template, string[] results, TestSet.TestCase testCase)
         {
             var uriTemplate = new UriTemplate(template);
@@ -29,7 +113,8 @@ namespace UriTemplateTests
         }
 
 
-        [Theory, MemberData("ExtendedSamples")]
+        [Theory]
+        [MemberData("ExtendedSamples")]
         public void ExtendedSamplesTest(string template, string[] results, TestSet.TestCase testCase)
         {
             var uriTemplate = new UriTemplate(template);
@@ -45,7 +130,6 @@ namespace UriTemplateTests
             try
             {
                 result = uriTemplate.Resolve();
-
             }
             catch (ArgumentException ex)
             {
@@ -60,7 +144,6 @@ namespace UriTemplateTests
             {
                 Assert.True(results.Contains(result));
             }
-
         }
 
 
@@ -80,7 +163,6 @@ namespace UriTemplateTests
             try
             {
                 result = uriTemplate.Resolve();
-
             }
             catch (ArgumentException ex)
             {
@@ -88,123 +170,28 @@ namespace UriTemplateTests
             }
 
             Assert.NotNull(aex);
-
-
-        }
-
-
-        public static IEnumerable<object[]> SpecSamples
-        {
-            get
-            {
-                Stream stream = null;
-
-                var suites = new List<Dictionary<string, TestSet>>();
-
-                stream =
-                    typeof(UriTemplateTests2).Assembly.GetManifestResourceStream("UriTemplateTests.spec-examples.json");
-                suites.Add(CreateTestSuite(new StreamReader(stream).ReadToEnd()));
-
-                stream = typeof(UriTemplateTests2).Assembly.GetManifestResourceStream("UriTemplateTests.spec-examples-by-section.json");
-                suites.Add(CreateTestSuite(new StreamReader(stream).ReadToEnd()));
-
-
-                foreach (var suite in suites)
-                {
-
-                    foreach (var testset in suite.Values)
-                    {
-                        foreach (var testCase in testset.TestCases)
-                        {
-                            yield return new object[] { testCase.Template, testCase.Result, testCase };
-
-                        }
-                    }
-
-                }
-
-            }
-        }
-
-
-        public static IEnumerable<object[]> ExtendedSamples
-        {
-            get
-            {
-                Stream stream = null;
-
-                var suites = new List<Dictionary<string, TestSet>>();
-
-                stream =
-                    typeof(UriTemplateTests2).Assembly.GetManifestResourceStream("UriTemplateTests.extended-tests.json");
-                suites.Add(CreateTestSuite(new StreamReader(stream).ReadToEnd()));
-
-                foreach (var suite in suites)
-                {
-
-                    foreach (var testset in suite.Values)
-                    {
-                        foreach (var testCase in testset.TestCases)
-                        {
-                            yield return new object[] { testCase.Template, testCase.Result, testCase };
-
-                        }
-                    }
-
-                }
-
-            }
-        }
-
-        public static IEnumerable<object[]> FailureSamples
-        {
-            get
-            {
-                Stream stream = null;
-
-                var suites = new List<Dictionary<string, TestSet>>();
-
-
-                stream =
-                    typeof(UriTemplateTests2).Assembly.GetManifestResourceStream("UriTemplateTests.negative-tests.json");
-                suites.Add(CreateTestSuite(new StreamReader(stream).ReadToEnd()));
-
-
-                foreach (var suite in suites)
-                {
-
-                    foreach (var testset in suite.Values)
-                    {
-                        foreach (var testCase in testset.TestCases)
-                        {
-                            yield return new object[] { testCase.Template, testCase.Result, testCase };
-
-                        }
-                    }
-
-                }
-
-            }
         }
 
 
         private static Dictionary<string, TestSet> CreateTestSuite(string json)
         {
-            JObject token = JObject.Parse(json);
+            var token = JObject.Parse(json);
 
             var testSuite = new Dictionary<string, TestSet>();
             foreach (JProperty levelSet in token.Children())
             {
                 testSuite.Add(levelSet.Name, CreateTestSet(levelSet.Name, levelSet.Value));
-
             }
+
             return testSuite;
         }
 
         private static TestSet CreateTestSet(string name, JToken token)
         {
-            var testSet = new TestSet();
-            testSet.Name = name;
+            var testSet = new TestSet
+            {
+                Name = name
+            };
 
             var variables = token["variables"];
 
@@ -227,7 +214,7 @@ namespace UriTemplateTests
         {
             if (variable.Value.Type == JTokenType.Array)
             {
-                var array = (JArray)variable.Value;
+                var array = (JArray) variable.Value;
                 if (array.Count == 0)
                 {
                     dictionary.Add(variable.Name, new List<string>());
@@ -239,17 +226,18 @@ namespace UriTemplateTests
             }
             else if (variable.Value.Type == JTokenType.Object)
             {
-                var jvalue = (JObject)variable.Value;
+                var jvalue = (JObject) variable.Value;
                 var dict = new Dictionary<string, string>();
                 foreach (var prop in jvalue.Properties())
                 {
                     dict[prop.Name] = prop.Value.ToString();
                 }
+
                 dictionary.Add(variable.Name, dict);
             }
             else
             {
-                if (((JValue)variable.Value).Value == null)
+                if (((JValue) variable.Value).Value == null)
                 {
                     dictionary.Add(variable.Name, null);
                 }
@@ -257,19 +245,19 @@ namespace UriTemplateTests
                 {
                     dictionary.Add(variable.Name, variable.Value.ToString());
                 }
-
             }
         }
 
         private static TestSet.TestCase CreateTestCase(TestSet testSet, JToken testcase)
         {
-            var testCase = new TestSet.TestCase(testSet);
-
-            testCase.Template = testcase[0].Value<string>();
+            var testCase = new TestSet.TestCase(testSet)
+            {
+                Template = testcase[0].Value<string>()
+            };
 
             if (testcase[1].Type == JTokenType.Array)
             {
-                var results = (JArray)testcase[1];
+                var results = (JArray) testcase[1];
                 testCase.Result = results.Select(jv => jv.Value<string>()).ToArray();
             }
             else
@@ -282,33 +270,23 @@ namespace UriTemplateTests
 
         public class TestSet
         {
+            public List<TestCase> TestCases = new List<TestCase>();
+            public Dictionary<string, object> Variables = new Dictionary<string, object>();
             public string Name { get; set; }
             public int level { get; set; }
-            public Dictionary<string, object> Variables = new Dictionary<string, object>();
-            public List<TestCase> TestCases = new List<TestCase>();
 
             public class TestCase
             {
-                private readonly TestSet _testSet;
-
                 public TestCase(TestSet testSet)
                 {
-                    _testSet = testSet;
+                    TestSet = testSet;
                 }
 
-                public TestSet TestSet
-                {
-                    get { return _testSet; }
-                }
+                public TestSet TestSet { get; }
 
                 public string Template { get; set; }
                 public string[] Result { get; set; }
             }
-
-
         }
-
-
-
     }
 }

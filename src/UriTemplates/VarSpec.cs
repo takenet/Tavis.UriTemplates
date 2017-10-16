@@ -4,29 +4,24 @@ namespace Tavis.UriTemplates
 {
     public class VarSpec
     {
-        private readonly OperatorInfo _operatorInfo;
-        public StringBuilder VarName = new StringBuilder();
         public bool Explode = false;
-        public int PrefixLength = 0;
         public bool First = true;
+        public int PrefixLength = 0;
+        public StringBuilder VarName = new StringBuilder();
 
         public VarSpec(OperatorInfo operatorInfo)
         {
-            _operatorInfo = operatorInfo;
+            OperatorInfo = operatorInfo;
         }
 
-        public OperatorInfo OperatorInfo
-        {
-            get { return _operatorInfo; }
-        }
+        public OperatorInfo OperatorInfo { get; }
 
         public override string ToString()
         {
-            return (First ? _operatorInfo.First : "") +
-                   VarName.ToString()
+            return (First ? OperatorInfo.First : "") +
+                   VarName
                    + (Explode ? "*" : "")
                    + (PrefixLength > 0 ? ":" + PrefixLength : "");
-
         }
     }
 }

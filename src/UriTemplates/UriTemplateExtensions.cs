@@ -17,7 +17,6 @@ namespace Tavis.UriTemplates
 
         public static UriTemplate AddParameters(this UriTemplate template, object parametersObject)
         {
-
             if (parametersObject != null)
             {
                 IEnumerable<PropertyInfo> properties;
@@ -36,7 +35,9 @@ namespace Tavis.UriTemplates
 
             return template;
         }
-        public static UriTemplate AddParameters(this UriTemplate uriTemplate, IDictionary<string, object> linkParameters)
+
+        public static UriTemplate AddParameters(this UriTemplate uriTemplate,
+            IDictionary<string, object> linkParameters)
         {
             if (linkParameters != null)
             {
@@ -45,6 +46,7 @@ namespace Tavis.UriTemplates
                     uriTemplate.SetParameter(parameter.Key, parameter.Value);
                 }
             }
+
             return uriTemplate;
         }
     }
@@ -55,14 +57,13 @@ namespace Tavis.UriTemplates
         {
             var parameters = uri.GetQueryStringParameters();
             return MakeTemplate(uri, parameters);
-
         }
 
         public static UriTemplate MakeTemplate(this Uri uri, IDictionary<string, object> parameters)
         {
             var target = uri.GetComponents(UriComponents.AbsoluteUri
-                                                     & ~UriComponents.Query
-                                                     & ~UriComponents.Fragment, UriFormat.Unescaped);
+                                           & ~UriComponents.Query
+                                           & ~UriComponents.Fragment, UriFormat.Unescaped);
             var template = new UriTemplate(target + "{?" + string.Join(",", parameters.Keys.ToArray()) + "}");
             template.AddParameters(parameters);
 
@@ -71,19 +72,18 @@ namespace Tavis.UriTemplates
 
         public static Dictionary<string, object> GetQueryStringParameters(this Uri target)
         {
-            Uri uri = target;
+            var uri = target;
             var parameters = new Dictionary<string, object>();
 
-            var reg = new Regex(@"([-A-Za-z0-9._~]*)=([^&]*)&?");		// Unreserved characters: http://tools.ietf.org/html/rfc3986#section-2.3
+            var reg = new Regex(
+                @"([-A-Za-z0-9._~]*)=([^&]*)&?"); // Unreserved characters: http://tools.ietf.org/html/rfc3986#section-2.3
             foreach (Match m in reg.Matches(uri.Query))
             {
-                string key = m.Groups[1].Value.ToLowerInvariant();
-                string value = m.Groups[2].Value;
+                var key = m.Groups[1].Value.ToLowerInvariant();
+                var value = m.Groups[2].Value;
                 parameters.Add(key, value);
             }
             return parameters;
         }
-
-       
     }
 }
