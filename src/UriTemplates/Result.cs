@@ -96,7 +96,7 @@ namespace Tavis.UriTemplates
                     _result.Append(',');
                 }
             }
-            if (dictionary.Count() > 0)
+            if (dictionary.Any())
             {
                 _result.Remove(_result.Length - 1, 1);
             }

@@ -5,7 +5,12 @@ namespace Tavis.UriTemplates
 {
     public class UriTemplateTable
     {
-        private readonly Dictionary<string, UriTemplate> _templates = new Dictionary<string, UriTemplate>();
+        private readonly Dictionary<string, UriTemplate> _templates;
+
+        public UriTemplateTable()
+        {
+            _templates = new Dictionary<string, UriTemplate>();
+        }
 
         public UriTemplate this[string key]
         {

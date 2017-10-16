@@ -14,7 +14,6 @@ namespace Tavis.UriTemplates
         private const string Var = "(?<var>(?:(?<lvar>" + Varname + ")[*]?,?)*)";
         private const string Varspec = "(?<varspec>{" + Op + Var + "})";
 
-
         private static readonly Dictionary<char, OperatorInfo> Operators = new Dictionary<char, OperatorInfo>
         {
             {
@@ -116,14 +115,8 @@ namespace Tavis.UriTemplates
         };
 
         private readonly Dictionary<string, object> _parameters;
-
-
         private readonly bool _resolvePartially;
-
         private readonly string _template;
-
-        // (?<varspec>{(?<op>[+#./;?&]?)(?<var>[a-zA-Z0-9_]*[*]?|(?:(?<lvar>[a-zA-Z0-9_]*[*]?),?)*)})
-
         private Regex _parameterRegex;
 
         public UriTemplate(string template, bool resolvePartially = false, bool caseInsensitiveParameterNames = false)
@@ -291,7 +284,6 @@ namespace Tavis.UriTemplates
 
                         break;
 
-
                     default:
                         if (IsVarNameChar(currentChar))
                         {
@@ -374,7 +366,8 @@ namespace Tavis.UriTemplates
                 if (list == null && value is IEnumerable<string>)
                 {
                     list = ((IEnumerable<string>) value).ToList();
-                };
+                }
+                ;
                 if (list != null)
                 {
                     if (varSpec.OperatorInfo.Named && !varSpec.Explode) // exploding will prefix with list name
@@ -563,7 +556,6 @@ namespace Tavis.UriTemplates
 
             return sb.ToString();
         }
-
 
         private static string GetExpression(List<string> paramNames, string prefix = null)
         {
