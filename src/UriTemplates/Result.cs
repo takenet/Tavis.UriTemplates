@@ -7,13 +7,13 @@ namespace Tavis.UriTemplates
 {
     public class Result
     {
-        private const string _UriReservedSymbols = ":/?#[]@!$&'()*+,;=";
-        private const string _UriUnreservedSymbols = "-._~";
+        private const string UriReservedSymbols = ":/?#[]@!$&'()*+,;=";
+        private const string UriUnreservedSymbols = "-._~";
 
         private static readonly char[] HexDigits =
             {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-        private readonly StringBuilder _Result = new StringBuilder();
+        private readonly StringBuilder _result = new StringBuilder();
 
         public Result()
         {
@@ -25,29 +25,29 @@ namespace Tavis.UriTemplates
 
         public StringBuilder Append(char value)
         {
-            return _Result.Append(value);
+            return _result.Append(value);
         }
 
         public StringBuilder Append(string value)
         {
-            return _Result.Append(value);
+            return _result.Append(value);
         }
 
         public override string ToString()
         {
-            return _Result.ToString();
+            return _result.ToString();
         }
 
         public void AppendName(string variable, OperatorInfo op, bool valueIsEmpty)
         {
-            _Result.Append(variable);
+            _result.Append(variable);
             if (valueIsEmpty)
             {
-                _Result.Append(op.IfEmpty);
+                _result.Append(op.IfEmpty);
             }
             else
             {
-                _Result.Append("=");
+                _result.Append("=");
             }
         }
 
@@ -58,16 +58,16 @@ namespace Tavis.UriTemplates
             {
                 if (op.Named && explode)
                 {
-                    _Result.Append(variable);
-                    _Result.Append("=");
+                    _result.Append(variable);
+                    _result.Append("=");
                 }
                 AppendValue(item.ToString(), 0, op.AllowReserved);
 
-                _Result.Append(explode ? op.Seperator : ',');
+                _result.Append(explode ? op.Seperator : ',');
             }
             if (list.Count > 0)
             {
-                _Result.Remove(_Result.Length - 1, 1);
+                _result.Remove(_result.Length - 1, 1);
             }
         }
 
@@ -75,30 +75,30 @@ namespace Tavis.UriTemplates
         {
             foreach (var key in dictionary.Keys)
             {
-                _Result.Append(Encode(key, op.AllowReserved));
+                _result.Append(Encode(key, op.AllowReserved));
                 if (explode)
                 {
-                    _Result.Append('=');
+                    _result.Append('=');
                 }
                 else
                 {
-                    _Result.Append(',');
+                    _result.Append(',');
                 }
 
                 AppendValue(dictionary[key], 0, op.AllowReserved);
 
                 if (explode)
                 {
-                    _Result.Append(op.Seperator);
+                    _result.Append(op.Seperator);
                 }
                 else
                 {
-                    _Result.Append(',');
+                    _result.Append(',');
                 }
             }
             if (dictionary.Count() > 0)
             {
-                _Result.Remove(_Result.Length - 1, 1);
+                _result.Remove(_result.Length - 1, 1);
             }
         }
 
@@ -112,7 +112,7 @@ namespace Tavis.UriTemplates
                 }
             }
 
-            _Result.Append(Encode(value, allowReserved));
+            _result.Append(Encode(value, allowReserved));
         }
 
 
@@ -123,9 +123,9 @@ namespace Tavis.UriTemplates
             {
                 if (c >= 'A' && c <= 'z' //Alpha
                     || c >= '0' && c <= '9' // Digit
-                    || _UriUnreservedSymbols.IndexOf(c) !=
+                    || UriUnreservedSymbols.IndexOf(c) !=
                     -1 // Unreserved symbols  - These should never be percent encoded
-                    || allowReserved && _UriReservedSymbols.IndexOf(c) != -1
+                    || allowReserved && UriReservedSymbols.IndexOf(c) != -1
                 ) // Reserved symbols - should be included if requested (+)
                 {
                     result.Append(c);

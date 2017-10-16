@@ -9,13 +9,13 @@ namespace Tavis.UriTemplates
 {
     public class UriTemplate
     {
-        private const string varname = "[a-zA-Z0-9_]*";
-        private const string op = "(?<op>[+#./;?&]?)";
-        private const string var = "(?<var>(?:(?<lvar>" + varname + ")[*]?,?)*)";
-        private const string varspec = "(?<varspec>{" + op + var + "})";
+        private const string Varname = "[a-zA-Z0-9_]*";
+        private const string Op = "(?<op>[+#./;?&]?)";
+        private const string Var = "(?<var>(?:(?<lvar>" + Varname + ")[*]?,?)*)";
+        private const string Varspec = "(?<varspec>{" + Op + Var + "})";
 
 
-        private static readonly Dictionary<char, OperatorInfo> _Operators = new Dictionary<char, OperatorInfo>
+        private static readonly Dictionary<char, OperatorInfo> Operators = new Dictionary<char, OperatorInfo>
         {
             {
                 '\0',
@@ -115,7 +115,7 @@ namespace Tavis.UriTemplates
             }
         };
 
-        private readonly Dictionary<string, object> _Parameters;
+        private readonly Dictionary<string, object> _parameters;
 
 
         private readonly bool _resolvePartially;
@@ -124,13 +124,13 @@ namespace Tavis.UriTemplates
 
         // (?<varspec>{(?<op>[+#./;?&]?)(?<var>[a-zA-Z0-9_]*[*]?|(?:(?<lvar>[a-zA-Z0-9_]*[*]?),?)*)})
 
-        private Regex _ParameterRegex;
+        private Regex _parameterRegex;
 
         public UriTemplate(string template, bool resolvePartially = false, bool caseInsensitiveParameterNames = false)
         {
             _resolvePartially = resolvePartially;
             _template = template;
-            _Parameters = caseInsensitiveParameterNames
+            _parameters = caseInsensitiveParameterNames
                 ? new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
                 : new Dictionary<string, object>();
         }
@@ -142,27 +142,27 @@ namespace Tavis.UriTemplates
 
         public void SetParameter(string name, object value)
         {
-            _Parameters[name] = value;
+            _parameters[name] = value;
         }
 
         public void ClearParameter(string name)
         {
-            _Parameters.Remove(name);
+            _parameters.Remove(name);
         }
 
         public void SetParameter(string name, string value)
         {
-            _Parameters[name] = value;
+            _parameters[name] = value;
         }
 
         public void SetParameter(string name, IEnumerable<string> value)
         {
-            _Parameters[name] = value;
+            _parameters[name] = value;
         }
 
         public void SetParameter(string name, IDictionary<string, string> value)
         {
-            _Parameters[name] = value;
+            _parameters[name] = value;
         }
 
         public IEnumerable<string> GetParameterNames()
@@ -318,10 +318,10 @@ namespace Tavis.UriTemplates
             var varname = varSpec.VarName.ToString();
             result.ParameterNames.Add(varname);
 
-            if (!_Parameters.ContainsKey(varname)
-                || _Parameters[varname] == null
-                || _Parameters[varname] is IList && ((IList) _Parameters[varname]).Count == 0
-                || _Parameters[varname] is IDictionary && ((IDictionary) _Parameters[varname]).Count == 0)
+            if (!_parameters.ContainsKey(varname)
+                || _parameters[varname] == null
+                || _parameters[varname] is IList && ((IList) _parameters[varname]).Count == 0
+                || _parameters[varname] is IDictionary && ((IDictionary) _parameters[varname]).Count == 0)
             {
                 if (_resolvePartially)
                 {
@@ -354,7 +354,7 @@ namespace Tavis.UriTemplates
                 result.Append(varSpec.OperatorInfo.Seperator);
             }
 
-            var value = _Parameters[varname];
+            var value = _parameters[varname];
 
             // Handle Strings
             if (value is string)
@@ -434,11 +434,11 @@ namespace Tavis.UriTemplates
                 case '&':
                 case '?':
                 case '.':
-                    op = _Operators[operatorIndicator];
+                    op = Operators[operatorIndicator];
                     break;
 
                 default:
-                    op = _Operators['\0'];
+                    op = Operators['\0'];
                     break;
             }
             return op;
@@ -446,23 +446,23 @@ namespace Tavis.UriTemplates
 
         public IDictionary<string, object> GetParameters(Uri uri)
         {
-            if (_ParameterRegex == null)
+            if (_parameterRegex == null)
             {
                 var matchingRegex = CreateMatchingRegex(_template);
                 lock (this)
                 {
-                    _ParameterRegex = new Regex(matchingRegex);
+                    _parameterRegex = new Regex(matchingRegex);
                 }
             }
 
-            var match = _ParameterRegex.Match(uri.OriginalString);
+            var match = _parameterRegex.Match(uri.OriginalString);
             var parameters = new Dictionary<string, object>();
 
             for (var x = 1; x < match.Groups.Count; x++)
             {
                 if (match.Groups[x].Success)
                 {
-                    var paramName = _ParameterRegex.GroupNameFromNumber(x);
+                    var paramName = _parameterRegex.GroupNameFromNumber(x);
                     if (!string.IsNullOrEmpty(paramName))
                     {
                         parameters.Add(paramName, Uri.UnescapeDataString(match.Groups[x].Value));
@@ -475,7 +475,7 @@ namespace Tavis.UriTemplates
 
         public static string CreateMatchingRegex(string uriTemplate)
         {
-            var findParam = new Regex(varspec);
+            var findParam = new Regex(Varspec);
 
             var template = new Regex(@"([^{]|^)\?").Replace(uriTemplate, @"$+\?");
             ; //.Replace("?",@"\?");
@@ -507,7 +507,7 @@ namespace Tavis.UriTemplates
 
         public static string CreateMatchingRegex2(string uriTemplate)
         {
-            var findParam = new Regex(varspec);
+            var findParam = new Regex(Varspec);
             //split by host/path/query/fragment
 
             var template = new Regex(@"([^{]|^)\?").Replace(uriTemplate, @"$+\?");

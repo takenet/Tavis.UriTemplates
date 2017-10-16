@@ -5,14 +5,14 @@ namespace Tavis.UriTemplates
 {
     public class UriTemplateTable
     {
-        private readonly Dictionary<string, UriTemplate> _Templates = new Dictionary<string, UriTemplate>();
+        private readonly Dictionary<string, UriTemplate> _templates = new Dictionary<string, UriTemplate>();
 
         public UriTemplate this[string key]
         {
             get
             {
                 UriTemplate value;
-                if (_Templates.TryGetValue(key, out value))
+                if (_templates.TryGetValue(key, out value))
                 {
                     return value;
                 }
@@ -23,12 +23,12 @@ namespace Tavis.UriTemplates
 
         public void Add(string key, UriTemplate template)
         {
-            _Templates.Add(key, template);
+            _templates.Add(key, template);
         }
 
         public TemplateMatch Match(Uri url)
         {
-            foreach (var template in _Templates)
+            foreach (var template in _templates)
             {
                 var parameters = template.Value.GetParameters(url);
                 if (parameters != null)

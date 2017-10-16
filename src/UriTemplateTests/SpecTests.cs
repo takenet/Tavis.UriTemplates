@@ -273,7 +273,7 @@ namespace UriTemplateTests
             public List<TestCase> TestCases = new List<TestCase>();
             public Dictionary<string, object> Variables = new Dictionary<string, object>();
             public string Name { get; set; }
-            public int level { get; set; }
+            public int Level { get; set; }
 
             public class TestCase
             {
